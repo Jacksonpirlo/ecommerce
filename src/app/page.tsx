@@ -1,13 +1,5 @@
-import ImageMobile from "@/assets/images/HomeImgMobile.jpeg"
+import HomeTemplate from "@/components/templates/Home";
+
 export default function Home() {
-  return (
-    <section>
-      <header className={`bg-[url(${ImageMobile})]`}>
-
-      </header>
-      <main>
-
-      </main>
-    </section>
-  );
+  return (<HomeTemplate />);
 }
