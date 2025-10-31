@@ -16,7 +16,7 @@ export const authOptions = {
           console.error("Faltan datos de usuario para enviar el correo");
           return true;
         }
-        const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+        const baseUrl = process.env.NEXTAUTH_URL || "https://ecommerce-drab-six.vercel.app";
         await axios.post(`${baseUrl}/api/sendEmail`, {
           email: user.email,
           asunto: "Bienvenido a Plantas bonitas",
