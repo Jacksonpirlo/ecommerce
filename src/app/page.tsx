@@ -1,5 +1,13 @@
+import ImageMobile from "@/assets/images/HomeImgMobile.jpeg"
 export default function Home() {
   return (
-    <>hola</>
+    <section>
+      <header className={`bg-[url(${ImageMobile})]`}>
+
+      </header>
+      <main>
+
+      </main>
+    </section>
   );
 }
