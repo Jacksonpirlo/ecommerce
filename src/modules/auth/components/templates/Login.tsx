@@ -1,4 +1,6 @@
 "use client"
+import { Spinner } from "@heroui/react";
+import axios from "axios";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,21 +13,29 @@ export default function Login() {
   const handleLogin = async (e: any) => {
     e.preventDefault();
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false, // evita redirección automática
-    });
+    try {
+      // Login manual sin usar NextAuth
+      const response = await axios.post("/api/auth/login", {
+        email,
+        password
+      });
 
-    if(result?.status === 200) {
-      router.push("/dashboard")
+      const data = response.data;
+
+      if (response.status === 200) {
+        router.push("/dashboard");
+      } else {
+        console.error("Error en el inicio de sesión", data.message);
+        alert(data.message || "Inicio de sesión fallido. Por favor, verifica tus credenciales.");
+      }
+    } catch (error) {
+      console.error("Error en el inicio de sesión", error);
+      alert("Error al conectar con el servidor. Por favor, intenta nuevamente.");
     }
-
-    console.log(result);
   };
 
   return (
-    <form onSubmit={handleLogin}>
+    <form onSubmit={handleLogin} className="bg-gray-800">
       <input type="email" placeholder="Correo" onChange={(e) => setEmail(e.target.value)} />
       <input type="password" placeholder="Contraseña" onChange={(e) => setPassword(e.target.value)} />
       <button type="submit">Iniciar sesión</button>
