@@ -35,8 +35,8 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleLogin} className="bg-gray-800">
-      <input type="email" placeholder="Correo" onChange={(e) => setEmail(e.target.value)} />
+    <form onSubmit={handleLogin} className="text-black">
+      <input className="" type="email" placeholder="Correo" onChange={(e) => setEmail(e.target.value)} />
       <input type="password" placeholder="Contraseña" onChange={(e) => setPassword(e.target.value)} />
       <button type="submit">Iniciar sesión</button>
       <div>
