@@ -4,13 +4,13 @@ import { Spinner } from "@heroui/react";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { toast } from "react-toastify";
 
 import imageLogin from "@/assets/images/mobileImage.png";
 import Form from "@/modules/auth/components/organisms/form";
 
-const Register = () => {
+const RegisterForm = () => {
   const searchParams = useSearchParams();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -18,7 +18,6 @@ const Register = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  // Pre-rellenar campos si vienen de Google
   useEffect(() => {
     const error = searchParams.get('error');
     const googleEmail = searchParams.get('email');
@@ -125,6 +124,18 @@ const Register = () => {
         </div>
       </div>
     </>
+  );
+}
+
+const Register = () => {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="lg" color="success" />
+      </div>
+    }>
+      <RegisterForm />
+    </Suspense>
   );
 }
 
