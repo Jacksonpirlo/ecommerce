@@ -1,12 +1,12 @@
 import axios from "axios";
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcrypt";
 import { connectDB } from "@/lib/db";
 import { User } from "@/database/models/User";
 
-export const authOptions = {
+export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -66,13 +66,10 @@ export const authOptions = {
             return false;
           }
 
-          // Verificar si el usuario existe en la base de datos
           await connectDB();
           const existingUser = await User.findOne({ email: user.email });
 
           if (!existingUser) {
-            // Usuario no existe, redirigir al registro
-            // Guardamos el error en la URL para manejarlo en el cliente
             return `/auth/register?error=google_no_account&email=${encodeURIComponent(user.email)}&name=${encodeURIComponent(user.name || '')}`;
           }
 
@@ -100,14 +97,40 @@ export const authOptions = {
     },
 
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      // Si la URL contiene el error de Google, redirigir al registro
+     
       if (url.includes('error=google_no_account')) {
         return url;
       }
-      // Por defecto, redirigir al dashboard
+ 
       return `${baseUrl}/dashboard`;
     },
+
+    async jwt({ token, user }: any) {
+      
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+      }
+      return token;
+    },
+
+    async session({ session, token }: any) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.name = token.name;
+      }
+      return session;
+    },
   },
+  pages: {
+    signIn: "/auth/login",
+  },
+  session: {
+    strategy: "jwt", 
+  },
+  secret: process.env.NEXTAUTH_SECRET, 
 };
 
 const handler = NextAuth(authOptions);
