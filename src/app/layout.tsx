@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { SessionProvider } from "next-auth/react";
 import { Providers } from "./providers";
 import { ToastContainer } from "react-toastify";
+import NavbarTemplate from "@/components/templates/Navbar";
 
 export default function RootLayout({
   children,
@@ -15,6 +16,7 @@ export default function RootLayout({
       <body className={`antialiased`}>
         <Providers>
           <SessionProvider>
+            <NavbarTemplate />
             {children}
           </SessionProvider>
         </Providers>
