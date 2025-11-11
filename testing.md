@@ -1,331 +1,345 @@
-# Testing en Next.js (App Router) con TypeScript, Jest y React Testing Library
-
-
----
-
-## 1) Prerrequisitos
-
-- Node 18+
-- Proyecto Next.js con **App Router** (`/app`). Si partes de cero:
-  ```bash
-  npx create-next-app@latest my-app --ts --eslint
-  cd my-app
-  ```
+# Pruebas de Integración en Next.js (App Router) con Jest + React Testing Library (RTL)
 
 ---
 
-## 2) Instala dependencias de testing
+## 0) ¿Qué es RTL?
 
-```bash
-npm i -D jest jest-environment-jsdom @types/jest   @testing-library/react @testing-library/jest-dom @testing-library/user-event   ts-jest next@latest
-```
-
-> **Por qué:**  
-> - `jest` = runner.  
-> - `jest-environment-jsdom` = DOM virtual.  
-> - `@testing-library/*` = utilidades de pruebas para React + matchers.  
-> - `ts-jest` = compilar TS en Jest.  
-> - `next` (peer) para que el preset de Next funcione si lo usas.
+**React Testing Library (RTL)** es una librería enfocada en probar interfaces **como lo haría un usuario real**, no el desarrollador.  
+Sus principios clave:
+- Seleccionar elementos por **rol**, **nombre**, **texto**, **label** (accesibilidad).
+- Simular interacciones reales: clics, tipeo, teclado con `@testing-library/user-event`.
+- Evitar probar implementaciones internas y centrarse en **comportamiento observable**.
 
 ---
 
-## 3) Configura Jest (App Router)
+## 1) Diferencias: Unitarias vs Integración vs E2E
 
-Crea **`jest.config.ts`** en la raíz:
+| Tipo de prueba | Enfoque | ¿Qué cubre? | Dobles de prueba | Velocidad | Cuándo usar |
+|---|---|---|---|---|---|
+| **Unitarias** | 1 sola pieza aislada | Lógica interna | Mocks para TODAS las dependencias | Muy rápida | Para helpers, funciones, hooks |
+| **Integración** | Múltiples piezas juntas | Flujo entre componentes o funciones | Mocks solo en fronteras (fetch, router) | Rápida/Media | Validar interacciones entre componentes |
+| **E2E** | Toda la app | UI real + backend | Sin mocks | Lenta | Validar flujos reales de usuario |
 
-```ts
-// jest.config.ts
-import type { Config } from 'jest';
+---
 
-const config: Config = {
-  testEnvironment: 'jest-environment-jsdom',
-  // Ubicaciones de tests
-  testMatch: ['**/__tests__/**/*.(test|spec).(ts|tsx)'],
-  // Soporte TS
-  transform: {
-    '^.+\.(ts|tsx)$': ['ts-jest', { tsconfig: './tsconfig.json' }],
-  },
-  moduleNameMapper: {
-    // Ignora estilos y assets en imports
-    '\\.(css|less|sass|scss)$': 'identity-obj-proxy',
-    '^@/(.*)$': '<rootDir>/src/$1', // Si usas alias @ -> "./"
-  },
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
-  clearMocks: true,
-};
+## 2) Requisitos
 
-export default config;
-```
-
-Crea **`jest.setup.ts`**:
-
-```ts
-// jest.setup.ts
-import '@testing-library/jest-dom';
-```
-
-En **`package.json`**, agrega scripts:
+Ya debes tener configurado Jest + RTL + jsdom, con los scripts:
 
 ```jsonc
 {
   "scripts": {
-    "test": "jest --passWithNoTests",
+    "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage"
   }
 }
 ```
 
-> **Nota App Router:** normalmente probamos **Client Components** (con `"use client"`) y lógica pura. Para Server Components, extrae la lógica a utilidades y pruébalas como funciones puras.
-
 ---
 
-## 4) Estructura sugerida
+## 3) Estructura de la clase
 
 ```
 src/
   components/
-    ui/
-      Button.tsx
-  lib/
-    sum.ts
-__tests__/
-  Button.test.tsx
-  sum.test.ts
-```
-
-> Si usas alias `@`, ajusta `tsconfig.json`:
-```jsonc
-{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }
-  }
-}
+    ui/Button.tsx
+    Display.tsx
+    GoDetail.tsx
+    LoginForm.tsx
+  features/demo/SimplePage.tsx
+  lib/fetcher.ts
+__tests__/integration/
+  SimplePage.int.test.tsx
+  LoginForm.int.test.tsx
+  Router.int.test.tsx
 ```
 
 ---
 
-## 5) Componente de ejemplo (Button)
+# 4) EJEMPLO A — INTEGRACIÓN SIMPLE DE COMPONENTES (por props)
 
-Crea `src/components/ui/Button.tsx`:
+## 4.1 Componentes usados
 
+### `Button.tsx`
 ```tsx
 'use client';
+type Props = { label: string; onClick?: () => void; disabled?: boolean };
 
-import React from 'react';
-
-export interface ButtonProps {
-  label: string;
-  onClick?: () => void;
-  disabled?: boolean;
-  type?: 'button' | 'submit' | 'reset';
-  'aria-label'?: string;
+export default function Button({ label, onClick, disabled }: Props) {
+  return <button disabled={disabled} onClick={onClick}>{label}</button>;
 }
-
-const Button: React.FC<ButtonProps> = ({
-  label,
-  onClick,
-  disabled = false,
-  type = 'button',
-  ...aria
-}) => {
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className="px-4 py-2 rounded-md border focus:outline-none focus:ring"
-      {...aria}
-    >
-      {label}
-    </button>
-  );
-};
-
-export default Button;
 ```
 
-> **Visualízalo:** en cualquier Client Page/Component del App Router:
+### `Display.tsx`
 ```tsx
 'use client';
+export default function Display({ value }: { value: number }) {
+  return <p>Valor: <span aria-label="count">{value}</span></p>;
+}
+```
 
+### `SimplePage.tsx`
+```tsx
+'use client';
+import { useState } from 'react';
 import Button from '@/src/components/ui/Button';
+import Display from '@/src/components/Display';
 
-export default function Demo() {
-  const handleClick = () => alert('Clicked!');
-  return <Button label="Click me" onClick={handleClick} />;
-}
-```
+export default function SimplePage() {
+  const [value, set] = useState(0);
 
----
-
-## 6) Pruebas unitarias del Button (RTL)
-
-Crea `__tests__/Button.test.tsx`:
-
-```tsx
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import Button from '@/src/components/ui/Button';
-
-describe('Button', () => {
-  test('renderiza con el texto correcto', () => {
-    render(<Button label="Click me" />);
-    expect(screen.getByRole('button', { name: /click me/i })).toBeInTheDocument();
-  });
-
-  test('dispara onClick al hacer clic', async () => {
-    const user = userEvent.setup();
-    const handleClick = jest.fn();
-
-    render(<Button label="Click me" onClick={handleClick} />);
-    await user.click(screen.getByRole('button', { name: /click me/i }));
-
-    expect(handleClick).toHaveBeenCalledTimes(1);
-  });
-
-  test('respeta el estado disabled', async () => {
-    const user = userEvent.setup();
-    const handleClick = jest.fn();
-
-    render(<Button label="Nope" onClick={handleClick} disabled />);
-    const btn = screen.getByRole('button', { name: /nope/i });
-
-    expect(btn).toBeDisabled();
-    await user.click(btn);
-    expect(handleClick).not.toHaveBeenCalled();
-  });
-
-  test('accesibilidad: usa role y label correctos', () => {
-    render(<Button label="Enviar" aria-label="Enviar formulario" />);
-    expect(screen.getByRole('button', { name: /enviar formulario/i })).toBeInTheDocument();
-  });
-
-  test('interacción de teclado (Enter/Espacio)', async () => {
-    const user = userEvent.setup();
-    const handleClick = jest.fn();
-
-    render(<Button label="Keyable" onClick={handleClick} />);
-    const btn = screen.getByRole('button', { name: /keyable/i });
-
-    btn.focus();
-    await user.keyboard('{Enter}');
-    await user.keyboard(' ');
-
-    expect(handleClick).toHaveBeenCalledTimes(2);
-  });
-});
-```
-
-Ejecuta:
-```bash
-npm run test
-```
-
----
-
-## 7) Otros casos comunes de pruebas unitarias
-
-### 7.1 Funciones puras (lib)
-
-`src/lib/sum.ts`:
-```ts
-export const sum = (a: number, b: number) => a + b;
-```
-
-`__tests__/sum.test.ts`:
-```ts
-import { sum } from '@/src/lib/sum';
-
-describe('sum', () => {
-  it('suma números', () => {
-    expect(sum(2, 3)).toBe(5);
-  });
-
-  it('maneja negativos', () => {
-    expect(sum(-2, 3)).toBe(1);
-  });
-});
-```
-
-### 7.2 Input + estado controlado
-
-```tsx
-// src/components/Search.tsx
-'use client';
-import React from 'react';
-
-export default function Search() {
-  const [q, setQ] = React.useState('');
   return (
     <div>
-      <label htmlFor="q">Buscar</label>
-      <input id="q" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Escribe..." />
-      <p data-testid="mirror">{q}</p>
+      <h1>Demo</h1>
+      <Display value={value} />
+      <Button label="+" onClick={() => set((v) => v + 1)} />
+      <Button label="-" onClick={() => set((v) => v - 1)} />
     </div>
   );
 }
 ```
 
+---
+
+## 4.2 Test de integración simple
+
+`SimplePage.int.test.tsx`
+
 ```tsx
-// __tests__/Search.test.tsx
+// Importamos funciones principales para renderizar y buscar elementos en el DOM virtual
 import { render, screen } from '@testing-library/react';
+
+// userEvent simula acciones del usuario: clic, escritura, teclado, etc.
 import userEvent from '@testing-library/user-event';
-import Search from '@/src/components/Search';
 
-test('refleja el texto ingresado', async () => {
-  const user = userEvent.setup();
-  render(<Search />);
+// Importamos la página que integra varios componentes
+import SimplePage from '@/src/features/demo/SimplePage';
 
-  const input = screen.getByPlaceholderText(/escribe/i);
-  await user.type(input, 'next app router');
+describe('SimplePage (integración simple por props)', () => {
+  it('actualiza el valor al hacer clic en + y -', async () => {
+    // Preparamos simulador de usuario
+    const user = userEvent.setup();
 
-  expect(screen.getByTestId('mirror')).toHaveTextContent('next app router');
+    // Renderizamos la página completa
+    render(<SimplePage />);
+
+    // Obtenemos el span que muestra el valor actual (aria-label="count")
+    const value = screen.getByLabelText('count');
+
+    // Verificamos estado inicial
+    expect(value).toHaveTextContent('0');
+
+    // Simulamos clic en el botón "+"
+    await user.click(screen.getByRole('button', { name: '+' }));
+
+    // Validamos incremento
+    expect(value).toHaveTextContent('1');
+
+    // Simulamos clic en el botón "-"
+    await user.click(screen.getByRole('button', { name: '-' }));
+
+    // Validamos que vuelva a 0
+    expect(value).toHaveTextContent('0');
+  });
 });
 ```
 
-
-
-
 ---
 
-## 8) Consejos rápidos (App Router)
+# 5) EJEMPLO B — FORMULARIO + MOCK DE API (fetch)
 
-- Prefiere **probar comportamiento** (texto, roles, accesibilidad) sobre detalles de implementación.   
-- Usa `screen.getByRole` + `name` para acceder a elementos de forma accesible.  
-- Mantén los tests **rápidos y determinísticos** (sin llamadas reales de red).
-
----
-
-## 9) Retos
-
-1. Crear un componente **Counter** con botones `+` y `-`, y probar:
-   - Render inicial en `0`
-   - Click en `+` incrementa
-   - Click en `-` decrementa
-   - Teclado: `{ArrowUp}` incrementa, `{ArrowDown}` decrementa
-2. Crear un **Form** con un input de email y botón submit:
-   - Valida formato
-   - Deshabilita el botón si el email es inválido
-   - Prueba que el mensaje de error aparece y desaparece
-
----
-
-## 10) Troubleshooting común
-
-- **`Cannot find module '@/...'`** → Revisa `paths` en `tsconfig.json` y `moduleNameMapper` en `jest.config.ts`.  
-- **`TextEncoder is not defined`** → Asegúrate `testEnvironment: 'jest-environment-jsdom'`.  
-- **Imports de `.css` fallan** → Agrega `identity-obj-proxy` en `moduleNameMapper`.  
-- **`Hooks can only be called inside of the body of a function component`** → Usa `render`/`renderHook` correctamente.  
-
----
-
-## 11) Comandos finales
-
-```bash
-npm run test        # correr una vez
-npm run test:watch  # modo watch
-npm run test:cov    # cobertura
+## 5.1 `fetcher.ts`
+```ts
+export async function postJSON(url: string, body: unknown) {
+  const res = await fetch(url, { method: 'POST', body: JSON.stringify(body) });
+  if (!res.ok) throw new Error('Network error');
+  return res.json();
+}
 ```
+
+## 5.2 `LoginForm.tsx`
+```tsx
+'use client';
+import { useState } from 'react';
+import { postJSON } from '@/src/lib/fetcher';
+
+export default function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [msg, setMsg] = useState('');
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setMsg('Cargando...');
+
+    try {
+      const data = await postJSON('/api/login', { email });
+      setMsg(`Bienvenido ${data.name}`);
+    } catch {
+      setMsg('Error de red');
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="email">Email</label>
+      <input id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <button type="submit">Entrar</button>
+      <p aria-live="polite">{msg}</p>
+    </form>
+  );
+}
+```
+
+---
+
+## 5.3 Test de integración (CON COMENTARIOS DETALLADOS)
+
+`LoginForm.int.test.tsx`
+
+```tsx
+// Funciones principales de RTL
+import { render, screen } from '@testing-library/react';
+
+// userEvent para simular acciones reales del usuario
+import userEvent from '@testing-library/user-event';
+
+// Componente que vamos a probar
+import LoginForm from '@/src/components/LoginForm';
+
+// Antes de cada test, reemplazamos fetch por un mock
+beforeEach(() => { global.fetch = jest.fn(); });
+
+// Después de cada test, limpiamos los mocks
+afterEach(() => { jest.resetAllMocks(); });
+
+describe('LoginForm (integración + mock de red)', () => {
+
+  it('muestra éxito cuando API responde 200', async () => {
+    // Simulamos que la API responde bien con un usuario "Ada"
+    (fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({ name: 'Ada' }),
+    });
+
+    const user = userEvent.setup();
+
+    // Renderizamos el formulario
+    render(<LoginForm />);
+
+    // Escribimos un email en el input
+    await user.type(screen.getByLabelText(/email/i), 'ada@example.com');
+
+    // Hacemos clic en el botón de enviar
+    await user.click(screen.getByRole('button', { name: /entrar/i }));
+
+    // findByText espera hasta que el mensaje aparezca (asíncrono)
+    expect(await screen.findByText(/bienvenido ada/i)).toBeInTheDocument();
+  });
+
+
+  it('muestra error cuando la API falla', async () => {
+    // Mock: la API responde mal (ok=false)
+    (fetch as jest.Mock).mockResolvedValue({ ok: false });
+
+    const user = userEvent.setup();
+    render(<LoginForm />);
+
+    // Escribimos el email
+    await user.type(screen.getByLabelText(/email/i), 'ada@example.com');
+
+    // Clic en enviar
+    await user.click(screen.getByRole('button', { name: /entrar/i }));
+
+    // Esperamos mensaje de error
+    expect(await screen.findByText(/error de red/i)).toBeInTheDocument();
+  });
+
+});
+```
+
+---
+
+# 6) EJEMPLO C — NAVEGACIÓN (mock de next/navigation)
+
+## 6.1 Componente
+
+```tsx
+'use client';
+import { useRouter } from 'next/navigation';
+
+export default function GoDetail({ id }: { id: string }) {
+  const router = useRouter();
+  return (
+    <button onClick={() => router.push(`/detail/${id}`)}>
+      Ver detalle
+    </button>
+  );
+}
+```
+
+---
+
+## 6.2 Test con comentarios detallados
+
+`Router.int.test.tsx`
+
+```tsx
+// Importamos herramientas de RTL
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+// Creamos un mock manual del router
+const push = jest.fn();
+
+// Sobrescribimos useRouter para este test
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push }),
+}));
+
+// Importamos el componente
+import GoDetail from '@/src/components/GoDetail';
+
+describe('GoDetail (integración + router)', () => {
+  it('llama a router.push con la ruta correcta', async () => {
+    const user = userEvent.setup();
+
+    // Renderizamos el componente con id=42
+    render(<GoDetail id="42" />);
+
+    // usuario hace clic en "Ver detalle"
+    await user.click(screen.getByRole('button', { name: /ver detalle/i }));
+
+    // verificamos que router.push fue llamado correctamente
+    expect(push).toHaveBeenCalledWith('/detail/42');
+  });
+});
+```
+
+---
+
+# 7) Buenas prácticas
+
+- Usa **selectores accesibles** (`getByRole`, `getByLabelText`, `findByText`).
+- Mockea **solo las fronteras**.
+- Usa `findBy*` para contenido asíncrono.
+- NO pruebes estados internos. Prueba **comportamiento visible**.
+
+---
+
+# 8) Retos fáciles
+
+1. Formulario que valida email (deshabilita botón).
+2. Página con contador y botón "Reiniciar".
+
+---
+
+# 9) Comandos
+
+```
+npm run test
+npm run test:watch
+npm run test:cov
+```
+
+---
