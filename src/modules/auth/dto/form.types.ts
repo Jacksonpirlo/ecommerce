@@ -6,13 +6,13 @@ export interface labelProps {
 }
 
 export interface inputProps {
-    placeHolder: string;
-    text: string;
+    placeHolder?: string;
+    text?: string;
     value: string;
     label?: string
-    type: string;
+    type?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    className: string;
+    className?: string;
 }
 export interface FormItems {
     titleOfTheForm: string;
