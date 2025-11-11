@@ -1,43 +1,106 @@
-"use client"
+"use client";
+
+import { Spinner } from "@heroui/react";
+import axios from "axios";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-toastify";
+
+import imageLogin from "@/assets/images/mobileImage.png";
+import Form from "../organisms/form";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter()
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: any) => {
-    e.preventDefault();
-
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false, // evita redirección automática
-    });
-
-    if(result?.status === 200) {
-      router.push("/dashboard")
+  const handleLogin = async () => {
+    if (!email || !password) {
+      toast.error("Por favor, completa todos los campos");
+      return;
     }
 
-    console.log(result);
+    setLoading(true);
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.ok) {
+        toast.success("¡Inicio de sesión exitoso!");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 500);
+      } else {
+        toast.error("Correo o contraseña incorrectos.");
+      }
+    } catch (error) {
+      console.error("Error en el inicio de sesión", error);
+      toast.error("Error al conectar con el servidor. Por favor, intenta nuevamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const fields = [
+    {
+      type: "email",
+      placeHolder: "Correo",
+      placeholder: "Correo",
+      text: "",
+      value: email,
+      className: "",
+      onChange: (e: any) => setEmail(e.target.value),
+    },
+    {
+      type: "password",
+      placeHolder: "Contraseña",
+      placeholder: "Contraseña",
+      text: "",
+      value: password,
+      className: "",
+      onChange: (e: any) => setPassword(e.target.value),
+    },
+  ];
+
   return (
-    <form onSubmit={handleLogin}>
-      <input type="email" placeholder="Correo" onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" placeholder="Contraseña" onChange={(e) => setPassword(e.target.value)} />
-      <button type="submit">Iniciar sesión</button>
-      <div>
-        {/* Solo muestra el botón de Google, sin que aparezca otro botón adicional al hacer click */}
-        <button
-          type="button"
-          onClick={() => signIn("google")}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-white border rounded-md hover:bg-gray-100 text-black">
-          Iniciar con Google
-        </button>
+    <>
+      <div className="bg-[#f6f6f6]">
+        <Image src={imageLogin} alt="Imagen login" className="" />
       </div>
-    </form>
+
+      <div className="mt-10">
+        <h1 className="font-extrabold text-3xl text-center m-6 text-green-700">
+          Plantas bonitas
+        </h1>
+
+        <Form
+          titleOfTheForm="Iniciar sesión"
+          fields={fields}
+          btnText={loading ? <Spinner size="sm" color="success" /> : "Iniciar sesión"}
+          onClick={() => handleLogin()}
+          className=""
+          isLogin={true}
+          placeholder=""
+          value=""
+          btnDisabled={loading}
+        />
+
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={() => router.push("/auth/register")}
+            className="text-sm text-green-700 hover:underline"
+          >
+            ¿No tienes cuenta? Regístrate
+          </button>
+        </div>
+      </div>
+    </>
   );
 }
