@@ -1,10 +1,11 @@
 import { StaticImageData } from "next/image";
-import { JSX } from "react";
+import { JSX, ReactNode } from "react";
 
 export interface ButtonProps {
     className: string;
-    text: string;
-    onClick: () => void;
+    text: string | ReactNode;
+    onClick?: () => void;
     children?: JSX.Element;
-    icon?: StaticImageData | string
+    icon?: StaticImageData | string;
+    disabled?: boolean;
 }

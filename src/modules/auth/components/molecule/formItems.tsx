@@ -1,16 +1,25 @@
-import { labelProps } from "../../dto/form.types";
-import Input from "../atoms/Input";
-import Label from "../atoms/Label";
+type FormItemProps = {
+  placeHolder: string;
+  value: string;
+  text?: string;
+  className?: string;
+  type?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
 
-const FormItems = ({className, text}: labelProps) => {
-    return(
-    <>
-    <div>
-        <Label className={className} text="" />
-        <Input className={className} value="" placeHolder="" />
+const FormItem = ({ placeHolder, value, text, className, type = "text", onChange }: FormItemProps) => {
+  return (
+    <div className="flex flex-col w-full items-center">
+      {text && <label className="mb-2 text-sm font-medium text-gray-700">{text}</label>}
+      <input
+        type={type}
+        placeholder={placeHolder}
+        value={value}
+        onChange={onChange}
+        className={`w-[300px] border-0 border-b border-gray-300 focus:border-green-500 focus:ring-0 outline-none ${className}`}
+      />
     </div>
-    </>
-    )
-}
+  );
+};
 
-export default FormItems;
+export default FormItem;

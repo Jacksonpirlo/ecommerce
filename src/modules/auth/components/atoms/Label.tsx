@@ -1,7 +1,7 @@
 import { labelProps } from "../../dto/form.types";
 
-const Label = ({className, placeHolder, value}: labelProps) => {
-    return(<><input placeholder={placeHolder} className={className} value={value} type="text" /></>)
+const Label = ({className, text}: labelProps) => {
+    return(<><label htmlFor="" className={className}>{text}</label></>)
 }
 
 export default Label;
