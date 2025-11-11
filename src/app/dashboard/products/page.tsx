@@ -1,7 +1,9 @@
+import Products from "@/modules/dashboard/template/Products";
+
 export default function ProductsPage() {
   return (
     <div>
-      <h1>Productos</h1>
+      <Products />
     </div>
   );
 }
