@@ -1,7 +1,6 @@
 import { FormItems } from "../../dto/form.types";
 import FormItem from "../molecule/formItems";
 import Button from "@/components/atoms/Button";
-import Image from "next/image";
 import { Spinner } from "@heroui/react";
 
 import { signIn } from "next-auth/react";

@@ -6,10 +6,14 @@ import {
   NavbarItem,
   NavbarMenu,
   NavbarMenuItem,
-  Link,
   Button,
 } from "@heroui/react";
+import NextLink from "next/link";
 import { FaBars, FaTimes } from "react-icons/fa";
+import LogoutButton from "../organisms/LogoutButton";
+import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import i18n from "@/i18n/locales";
 
 export const AcmeLogo = () => {
   return (
@@ -26,6 +30,8 @@ export const AcmeLogo = () => {
 
 export default function NavbarTemplate() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const { data: session } = useSession();
+  const pathname = usePathname();
 
   const menuItems = [
     "Profile",
@@ -41,9 +47,9 @@ export default function NavbarTemplate() {
   ];
 
   return (
-    <Navbar 
-      className="bg-gray-800 text-white p-6" 
-      isMenuOpen={isMenuOpen} 
+    <Navbar
+      className="bg-gray-800 text-white p-6"
+      isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
     >
       <NavbarContent>
@@ -56,50 +62,67 @@ export default function NavbarTemplate() {
         </button>
         <NavbarBrand>
           <AcmeLogo />
-          <p className="font-bold text-inherit">ACME</p>
+          <p className="font-bold text-inherit">PLANTAS BONITAS</p>
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+      {session?.user && (
+        <>
+        <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
-          <Link color="foreground" href="#">
-            Features
-          </Link>
+          <NextLink href="/dashboard">
+            Dashboard
+          </NextLink>
         </NavbarItem>
         <NavbarItem isActive>
-          <Link aria-current="page" href="#">
-            Customers
-          </Link>
+          <NextLink href="/dashboard/products">
+            Products
+          </NextLink>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" href="#">
-            Integrations
-          </Link>
+          <NextLink href="/dashboard/products/create" className="text-foreground">
+            Create Products
+          </NextLink>
         </NavbarItem>
       </NavbarContent>
+        </>
+      )}
       <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
-          <Link href="#">Login</Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Button as={Link} color="primary" href="#" variant="flat">
-            Sign Up
-          </Button>
+        <NavbarItem className="flex gap-4">
+
+          {session?.user && (
+            <>
+            <LogoutButton />
+            <button
+                onClick={() => i18n.changeLanguage(i18n.language === "es" ? "en" : "es")}
+                className="bg-[#000000] hover:bg-[#47883f] text-white px-4 py-2 rounded-md transition"
+              >
+                {i18n.language === "es" ? "EN" : "ES"}
+              </button>
+            </>
+          )}
+
+          {pathname === "/auth/login" && (
+            <><NextLink href={"/auth/register"} >Register</NextLink></>
+          )}
+
+          {pathname === "/auth/register" && (
+            <><NextLink href={"/auth/login"} >Login</NextLink></>
+          )}
         </NavbarItem>
       </NavbarContent>
       <NavbarMenu className="pt-6 backdrop-blur-md bg-gray-900/95 shadow-lg">
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item}-${index}`}>
-            <Link
+            <NextLink
               className="w-full text-white hover:text-gray-300 transition py-3"
               color={
                 index === 2 ? "primary" : index === menuItems.length - 1 ? "danger" : "foreground"
               }
               href="#"
-              size="lg"
             >
               {item}
-            </Link>
+            </NextLink>
           </NavbarMenuItem>
         ))}
       </NavbarMenu>

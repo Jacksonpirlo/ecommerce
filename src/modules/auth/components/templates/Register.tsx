@@ -97,8 +97,8 @@ const RegisterForm = () => {
         <Image src={imageLogin} alt="Imagen registro" className="" />
       </div>
 
-      <div className="mt-20">
-        <h1 className="font-extrabold text-3xl text-center m-6 text-green-700">
+      <div className="mt-10">
+        <h1 className="font-extrabold text-3xl text-center m-2 text-green-700">
           Plantas bonitas
         </h1>
 
