@@ -74,7 +74,7 @@ export const authOptions: AuthOptions = {
           }
 
           // Usuario existe, enviar correo de bienvenida
-          const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+          const baseUrl = process.env.NEXTAUTH_URL;
           await axios.post(`${baseUrl}/api/sendEmail`, {
             email: user.email,
             asunto: "Bienvenido a Plantas bonitas",
