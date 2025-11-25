@@ -4,6 +4,7 @@ import { getProducts } from "@/services/products";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import SearchBar from "../products/SearchBar";
 
 const Products = () => {
 const [products, setProducts] = useState<PropductProps[]>([]);
@@ -15,9 +16,18 @@ const [products, setProducts] = useState<PropductProps[]>([]);
     }
     fetchProducts();
   }, [])
+    // Handler for search queries
+    const handleSearch = (query: string) => {
+      // Optionally filter products or trigger a search API call here
+      // Example: setProducts(products.filter(p => p.name.includes(query)));
+      // For now, just log the query
+      console.log("Search query:", query);
+    };
+
     return(
     <>
     <article className="flex flex-wrap justify-center items-center text-center">
+      <SearchBar onSearch={handleSearch} />
       {products.map((product) => {
         return(
     <Card className="py-4 text-black w-[320]" key={product._id}>

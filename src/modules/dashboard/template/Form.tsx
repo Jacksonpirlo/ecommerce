@@ -4,6 +4,15 @@ import Label from "@/modules/auth/components/atoms/Label"
 import { toast } from "react-toastify"
 import { ProductFormData } from "@/dto/ProductProps"
 import Form from "@/modules/auth/components/organisms/form"
+import * as yup from "yup"
+
+const productSchema = yup.object().shape({
+    name: yup.string().required("El nombre es obligatorio"),
+    price: yup.number().typeError("El precio debe ser un número").required("El precio es obligatorio").positive("El precio debe ser mayor a 0"),
+    description: yup.string().required("La descripción es obligatoria"),
+    stock: yup.number().typeError("El stock debe ser un número").min(0, "El stock no puede ser negativo"),
+    category: yup.string(),
+});
 
 const ProductForm = () => {
     const [file, setFile] = useState<File | null>(null)
@@ -54,6 +63,12 @@ const ProductForm = () => {
     }
 
     const handleSubmit = async () => {
+        try {
+            await productSchema.validate(formData, { abortEarly: false });
+        } catch (err: any) {
+            err.inner.forEach((e: any) => toast.error(e.message));
+            return;
+        }
         // Validaciones
         if (!formData.name || !formData.price || !formData.description || !file) {
             toast.error("Por favor completa todos los campos obligatorios")

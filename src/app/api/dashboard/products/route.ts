@@ -4,6 +4,22 @@ import cloudinary from "@/lib/claudinary";
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import * as yup from "yup";
+
+const productSchema = yup.object().shape({
+  name: yup.string().required("El nombre es obligatorio"),
+  price: yup
+    .number()
+    .typeError("El precio debe ser un número")
+    .required("El precio es obligatorio")
+    .positive("El precio debe ser mayor a 0"),
+  description: yup.string().required("La descripción es obligatoria"),
+  stock: yup
+    .number()
+    .typeError("El stock debe ser un número")
+    .min(0, "El stock no puede ser negativo"),
+  category: yup.string(),
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,17 +46,31 @@ export async function POST(req: NextRequest) {
     // Validar campos requeridos
     if (!name || !price || !description || !file) {
       return Response.json(
-        { ok: false, error: "Faltan campos requeridos (name, price, description, file)" },
+        {
+          ok: false,
+          error:
+            "Faltan campos requeridos (name, price, description, file)",
+        },
         { status: 400 }
       );
     }
 
     // Validar tipo de archivo
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       return Response.json(
         { ok: false, error: "El archivo debe ser una imagen" },
         { status: 400 }
       );
+    }
+
+    // Validar con yup
+    try {
+      await productSchema.validate(
+        { name, price, description, stock, category },
+        { abortEarly: false }
+      );
+    } catch (err: any) {
+      return Response.json({ ok: false, error: err.errors }, { status: 400 });
     }
 
     // Convertir el archivo a buffer para Cloudinary
@@ -49,16 +79,18 @@ export async function POST(req: NextRequest) {
 
     // Subir imagen a Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        {
-          folder: "e-commerce-aurinegro/products",
-          resource_type: "image",
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      ).end(buffer);
+      cloudinary.uploader
+        .upload_stream(
+          {
+            folder: "e-commerce-aurinegro/products",
+            resource_type: "image",
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        )
+        .end(buffer);
     });
 
     const imageUrl = (uploadResult as any).secure_url;
@@ -87,15 +119,31 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await connectDB();
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const category = searchParams.get("category");
+    const name = searchParams.get("name");
 
-    const products = await Product.find();
+    const query: any = {};
+    if (category) query.type = category;
+    if (name) query.name = { $regex: name, $options: "i" };
+
+    const total = await Product.countDocuments(query);
+    const products = await Product.find(query)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 });
 
     return Response.json({
       ok: true,
       products,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
     });
   } catch (error: any) {
     console.error("Error en GET /api/products:", error);
