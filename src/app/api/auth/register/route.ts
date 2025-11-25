@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     await newUser.save();
 
     try {
-      const baseUrl = process.env.NEXTAUTH_URL;
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
       
       await axios.post(`${baseUrl}/api/sendEmail`, {
         email: newUser.email,

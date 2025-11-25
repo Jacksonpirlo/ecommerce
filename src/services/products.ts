@@ -1,6 +1,7 @@
-import axios from "axios"
-const API = process.env.NEXTAUTH_URL;
+import axios from "axios";
+const API = process.env.NEXT_PUBLIC_API_URL;
+
 export const getProducts = async () => {
-    const res = axios.get(`${API}/products`);
-    return (await res).data;
-}
+  const res = await axios.get(`${API}/api/dashboard/products`);
+  return res.data;
+};
