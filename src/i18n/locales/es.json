@@ -1,5 +1,8 @@
 {
     "saludo": "¡Hola, amigo!",
-    "login": "Iniciar sesión"
-
+    "login": "Iniciar sesión",
+    "agregar_carrito": "Agregar al carrito",
+    "ver_carrito": "Ver carrito",
+    "products": "Productos",
+    "products_title": "Productos"
 }

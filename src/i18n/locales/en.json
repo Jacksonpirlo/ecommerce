@@ -1,5 +1,8 @@
 {
     "saludo": "Hello, friend!",
-    "login": "Log in"
-
+    "login": "Log in",
+    "agregar_carrito": "Add to cart",
+    "ver_carrito": "View cart",
+    "products": "Products",
+    "products_title": "Products"
 }

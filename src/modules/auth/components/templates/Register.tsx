@@ -66,6 +66,7 @@ const RegisterForm = () => {
 
   const fields = [
     {
+      name: "name",
       type: "text",
       placeHolder: "Nombre",
       text: "",
@@ -74,6 +75,7 @@ const RegisterForm = () => {
       onChange: (e: any) => setName(e.target.value),
     },
     {
+      name: "email",
       type: "email",
       placeHolder: "Correo",
       text: "",
@@ -82,6 +84,7 @@ const RegisterForm = () => {
       onChange: (e: any) => setEmail(e.target.value),
     },
     {
+      name: "password",
       type: "password",
       placeHolder: "Contraseña",
       text: "",

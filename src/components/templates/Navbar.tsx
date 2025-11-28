@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -13,7 +13,9 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import LogoutButton from "../organisms/LogoutButton";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import i18n from "@/i18n/locales";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/i18n";
+import CartView from "../CartView";
 
 export const AcmeLogo = () => {
   return (
@@ -30,8 +32,10 @@ export const AcmeLogo = () => {
 
 export default function NavbarTemplate() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [showCart, setShowCart] = useState(false);
   const { data: session } = useSession();
   const pathname = usePathname();
+  const { t, i18n } = useTranslation();
 
   const menuItems = [
     "Profile",
@@ -84,7 +88,20 @@ export default function NavbarTemplate() {
             Create Products
           </NextLink>
         </NavbarItem>
+        <NavbarItem>
+          <button
+            onClick={() => setShowCart(!showCart)}
+            className="bg-green-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-500 transition"
+          >
+            Ver carrito
+          </button>
+        </NavbarItem>
       </NavbarContent>
+      {showCart && (
+        <div style={{ minWidth: 250, background: "#fff", color: "#222", borderRadius: 8, padding: 8, position: "absolute", right: 20, top: 60, zIndex: 50 }}>
+          <CartView />
+        </div>
+      )}
         </>
       )}
       <NavbarContent justify="end">
@@ -94,11 +111,11 @@ export default function NavbarTemplate() {
             <>
             <LogoutButton />
             <button
-                onClick={() => i18n.changeLanguage(i18n.language === "es" ? "en" : "es")}
-                className="bg-[#000000] hover:bg-[#47883f] text-white px-4 py-2 rounded-md transition"
-              >
-                {i18n.language === "es" ? "EN" : "ES"}
-              </button>
+              onClick={() => i18n.changeLanguage(i18n.language === "es" ? "en" : "es")}
+              className="bg-[#000000] hover:bg-[#47883f] text-white px-4 py-2 rounded-md transition"
+            >
+              {i18n.language === "es" ? "EN" : "ES"}
+            </button>
             </>
           )}
 

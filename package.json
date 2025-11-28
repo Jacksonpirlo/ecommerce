@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "cron": "tsx src/cron/emailCron.ts"
   },
   "dependencies": {
     "@heroui/navbar": "^2.2.25",
@@ -23,6 +24,7 @@
     "i18next": "^25.6.3",
     "mongoose": "^8.19.2",
     "next-auth": "^4.24.12",
+    "node-cron": "^4.2.1",
     "nodemailer": "^7.0.10",
     "pg": "^8.16.3",
     "react": "19.2.0",
@@ -44,6 +46,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "baseline-browser-mapping": "^2.8.32",
     "bcrypt": "^6.0.0",
     "cypress": "^15.6.0",
     "eslint": "^9",
@@ -53,6 +56,7 @@
     "next": "^16.0.1",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.5",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }

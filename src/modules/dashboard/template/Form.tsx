@@ -115,30 +115,35 @@ const ProductForm = () => {
 
     const fields = [
         {
+            name: "name",
             placeHolder: "Nombre del Producto *",
             value: formData.name,
             type: "text",
             onChange: handleInputChange,
         },
         {
+            name: "price",
             placeHolder: "Precio *",
             value: formData.price,
             type: "number",
             onChange: handleInputChange,
         },
         {
+            name: "description",
             placeHolder: "Descripción *",
             value: formData.description,
             type: "text",
             onChange: handleInputChange,
         },
         {
+            name: "stock",
             placeHolder: "Stock Disponible",
             value: formData.stock,
             type: "number",
             onChange: handleInputChange,
         },
         {
+            name: "category",
             placeHolder: "Categoría",
             value: formData.category,
             type: "text",

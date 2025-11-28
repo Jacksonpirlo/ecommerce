@@ -50,15 +50,17 @@ export default function Login() {
 
   const fields = [
     {
+      name: "email",
       type: "email",
-      placeHolder: "Correo",
-      placeholder: "Correo",
+      placeHolder: "Correo electrónico",
+      placeholder: "Correo electrónico",
       text: "",
       value: email,
       className: "",
       onChange: (e: any) => setEmail(e.target.value),
     },
     {
+      name: "password",
       type: "password",
       placeHolder: "Contraseña",
       placeholder: "Contraseña",

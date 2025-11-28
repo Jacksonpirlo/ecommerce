@@ -1,26 +1,46 @@
+"use client";
+
 import { FormItems } from "../../dto/form.types";
-import FormItem from "../molecule/formItems";
 import Button from "@/components/atoms/Button";
 import { Spinner } from "@heroui/react";
-
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+
+type InputProps = {
+  name: string;
+  placeHolder: string;
+  value: string;
+  type: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+};
+
+type FormProps = {
+  fields: InputProps[];
+  titleOfTheForm: string;
+  onClick: () => void;
+  btnText: React.ReactNode; // <-- Cambia aquí
+  btnDisabled?: boolean;
+  className?: string;
+  placeholder?: string;
+  value: string;
+};
 
 const Form = ({
   fields,
   titleOfTheForm,
   onClick,
-  className,
   btnText,
+  btnDisabled,
+  className,
   isLogin = false,
-  btnDisabled = false,
-}: FormItems & { isLogin?: boolean }) => {
+}: FormProps & { isLogin?: boolean }) => {
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
     await signIn("google");
   };
+
   return (
     <div className={`flex flex-col justify-center items-center gap-7 text-black ${className}`}>
       <h1 className="font-extrabold text-2xl text-center m-2 text-green-700">
@@ -36,15 +56,16 @@ const Form = ({
           }
         }}
       >
-        {fields?.map((formItem: any, index: any) => (
-          <FormItem
-            key={index}
-            placeHolder={formItem.placeHolder}
-            value={formItem.value}
-            text=""
-            className="w-[300px] border-0 border-b border-gray-300 focus:border-green-500 focus:ring-0 outline-none"
-            type={formItem.type}
-            onChange={formItem.onChange}
+        {fields?.map((field, idx) => (
+          <input
+            key={idx}
+            name={field.name} // <-- ¡ESTO ES CLAVE!
+            value={field.value}
+            type={field.type}
+            onChange={field.onChange}
+            placeholder={field.placeHolder}
+            className="mb-4 w-full px-3 py-2 border rounded"
+            autoComplete="off"
           />
         ))}
 

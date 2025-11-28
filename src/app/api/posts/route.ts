@@ -3,12 +3,17 @@ import { Events } from "@/database/models/event";
 import cloudinary from "@/lib/claudinary";
 import { NextRequest } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
     const formData = await req.formData();
-    const file = formData.get("image") as File;
+
+    // 🔥 Corrección principal: tu formulario envía "file", no "image"
+    const file = formData.get("file") as File;
+
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
     const category = formData.get("category") as string;
@@ -26,13 +31,13 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Convertir buffer a base64 data URI (método alternativo más seguro)
-    const base64Image = buffer.toString('base64');
+    // Convertir buffer a base64 data URI
+    const base64Image = buffer.toString("base64");
     const dataURI = `data:${file.type};base64,${base64Image}`;
 
     console.log("DataURI creado, tamaño:", dataURI.length);
 
-    // Subir imagen a Cloudinary usando upload con data URI
+    // Subir imagen a Cloudinary
     const uploadResult = await cloudinary.uploader.upload(dataURI, {
       folder: "posts",
       use_filename: true,
@@ -52,7 +57,7 @@ export async function POST(req: NextRequest) {
     });
 
     return Response.json({
-      message: "Nuevo evento registrado",
+      message: "Nuevo producto registrado",
       event: newEvent,
     });
   } catch (err: any) {
@@ -62,24 +67,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-export async function GET(req: NextRequest) {
-  const path = req.nextUrl.pathname;
-
-  if (path === "/api/hello") {
-    return Response.json({ message: "funciona" });
-  }
-
-  if (path === "/api/jackson") {
-    const object = {
-      name: "papitas de limon",
-      price: 2000,
-      amount: 1,
-    };
-
-    return Response.json(object);
-  }
-
-  return Response.json({ error: "Ruta no encontrada" }, { status: 404 });
 }
