@@ -18,7 +18,7 @@ export const authOptions: AuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      // <-- Aquí tipamos el retorno como 'any' para que TypeScript no lo marque
+
       async authorize(credentials): Promise<any | null> {
         if (!credentials?.email || !credentials?.password) return null;
 
@@ -28,9 +28,8 @@ export const authOptions: AuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(credentials.password.trim(), user.password);
         if (!isPasswordValid) return null;
-
-        // Solo devolvemos los campos que necesitamos
         return {
+          id: user._id.toString(),
           email: user.email,
           name: user.name,
         };
@@ -39,19 +38,21 @@ export const authOptions: AuthOptions = {
   ],
 
   callbacks: {
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.email = token.email;
-        session.user.name = token.name;
-      }
-      return session;
-    },
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
         token.email = user.email;
         token.name = user.name;
       }
       return token;
+    },
+    async session({ session, token }: any) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.name = token.name;
+      }
+      return session;
     },
   },
 

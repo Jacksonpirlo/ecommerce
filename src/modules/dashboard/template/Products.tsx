@@ -19,7 +19,6 @@ const Products = () => {
   const [totalPages, setTotalPages] = useState(1);
   const { data: session } = useSession();
   const user = session?.user as { id?: string; name?: string; email?: string; image?: string };
-
   const fetchProducts = async (searchQuery = query, pageNumber = page) => {
     const data = await getProducts({ name: searchQuery, page: pageNumber, limit });
     setProducts(data.products);
@@ -45,7 +44,7 @@ const Products = () => {
   const handleAddToCart = async (product: PropductProps) => {
     try {
       const res = await axios.post("/api/cart", {
-        userId: user?.id, // <-- usa user.id aquí
+        userId: user?.id,
         product: {
           productId: product._id,
           name: product.name,
@@ -106,7 +105,7 @@ const Products = () => {
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
         >
-          ← Anterior
+          Anterior
         </button>
         <span className="text-gray-700 font-medium">
           Página <span className="font-bold text-green-600">{page}</span> de <span className="font-bold">{totalPages}</span>
@@ -116,7 +115,7 @@ const Products = () => {
           onClick={() => handlePageChange(page + 1)}
           disabled={page === totalPages}
         >
-          Siguiente →
+          Siguiente
         </button>
       </div>
     </>
