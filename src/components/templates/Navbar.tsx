@@ -65,7 +65,7 @@ export default function NavbarTemplate() {
           {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
         </button>
         <NavbarBrand>
-          <AcmeLogo />
+          
           <p className="font-bold text-inherit">PLANTAS BONITAS</p>
         </NavbarBrand>
       </NavbarContent>
@@ -128,20 +128,68 @@ export default function NavbarTemplate() {
           )}
         </NavbarItem>
       </NavbarContent>
-      <NavbarMenu className="pt-6 backdrop-blur-md bg-gray-900/95 shadow-lg">
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`}>
-            <NextLink
-              className="w-full text-white hover:text-gray-300 transition py-3"
-              color={
-                index === 2 ? "primary" : index === menuItems.length - 1 ? "danger" : "foreground"
-              }
-              href="#"
-            >
-              {item}
-            </NextLink>
-          </NavbarMenuItem>
-        ))}
+      <NavbarMenu 
+        className="pt-6 bg-gray-900 text-white"
+        style={{
+          position: 'fixed',
+          top: '80px',
+          left: 0,
+          right: 0,
+          backgroundColor: '#111827',
+          zIndex: 40,
+          maxHeight: 'calc(100vh - 80px)',
+          overflowY: 'auto'
+        }}
+      >
+        {session?.user && (
+          <>
+            <NavbarMenuItem className="border-b border-gray-700">
+              <NextLink
+                className="w-full text-white hover:text-green-400 transition py-4 block text-lg font-medium px-4"
+                href="/dashboard"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dashboard
+              </NextLink>
+            </NavbarMenuItem>
+            
+            <NavbarMenuItem className="border-b border-gray-700">
+              <NextLink
+                className="w-full text-white hover:text-green-400 transition py-4 block text-lg font-medium px-4"
+                href="/dashboard/products"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Products
+              </NextLink>
+            </NavbarMenuItem>
+            
+            <NavbarMenuItem className="border-b border-gray-700">
+              <NextLink
+                className="w-full text-white hover:text-green-400 transition py-4 block text-lg font-medium px-4"
+                href="/dashboard/products/create"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Create Products
+              </NextLink>
+            </NavbarMenuItem>
+            
+            <NavbarMenuItem className="border-b border-gray-700">
+              <button
+                onClick={() => {
+                  setShowCart(!showCart);
+                  setIsMenuOpen(false);
+                }}
+                className="w-full text-left text-white hover:text-green-400 transition py-4 block text-lg font-medium px-4"
+              >
+                Ver carrito
+              </button>
+            </NavbarMenuItem>
+            
+            <NavbarMenuItem className="px-4 py-4">
+              <LogoutButton />
+            </NavbarMenuItem>
+          </>
+        )}
       </NavbarMenu>
     </Navbar>
   );
