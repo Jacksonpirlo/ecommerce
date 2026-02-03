@@ -66,7 +66,7 @@ const Products = () => {
 
   return (
     <>
-      <article className="flex flex-wrap items-center text-center">
+      <article className="flex flex-wrap justify-center items-center text-center">
         <SearchBar onSearch={handleSearch} />
         {products.map((product) => (
           <Card className="py-0 px-0 text-black w-[320px] shadow-2xl m-5 rounded-2xl overflow-hidden hover:shadow-3xl transition-shadow duration-300" key={product._id}>
