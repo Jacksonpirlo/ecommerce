@@ -66,18 +66,20 @@ const Products = () => {
 
   return (
     <>
-      <article className="flex flex-wrap justify-center items-center text-center">
+      <article className="flex flex-wrap items-center text-center">
         <SearchBar onSearch={handleSearch} />
         {products.map((product) => (
           <Card className="py-0 px-0 text-black w-[320px] shadow-2xl m-5 rounded-2xl overflow-hidden hover:shadow-3xl transition-shadow duration-300" key={product._id}>
             <CardHeader className="p-0 flex-col items-start">
-              <Image
-                alt={product.name}
-                className="object-cover w-full"
-                src={product.image}
-                width={320}
-                height={280}
-              />
+              <div className="w-full h-[280px] bg-gray-100 flex items-center justify-center overflow-hidden">
+                <Image
+                  alt={product.name}
+                  className="object-cover w-full h-full"
+                  src={product.image}
+                  width={320}
+                  height={280}
+                />
+              </div>
               <div className="flex flex-col items-start p-4 w-full gap-2">
                 <h3 className="text-lg font-bold text-gray-900 uppercase tracking-wide">{product.name}</h3>
                 {product.type && (
@@ -90,7 +92,7 @@ const Products = () => {
             <CardBody className="flex justify-center items-center text-center overflow-visible py-3 px-4">
               <button
                 onClick={() => handleAddToCart(product)}
-                className="w-[80%] bg-green-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-green-600 transition-all mb-2 duration-200 shadow-md hover:shadow-lg"
+                className="w-full bg-green-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-green-600 transition-all duration-200 shadow-md hover:shadow-lg"
               >
                 {t("agregar_carrito")}
               </button>
