@@ -70,26 +70,28 @@ const Products = () => {
       <article className="flex flex-wrap justify-center items-center text-center">
         <SearchBar onSearch={handleSearch} />
         {products.map((product) => (
-          <Card className="py-4 text-black w-[320]" key={product._id}>
-            <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+          <Card className="py-0 px-0 text-black w-[320px] shadow-2xl m-5 rounded-2xl overflow-hidden hover:shadow-3xl transition-shadow duration-300" key={product._id}>
+            <CardHeader className="p-0 flex-col items-start">
               <Image
-                alt="Card background"
-                className="object-cover rounded-xl mb-4"
+                alt={product.name}
+                className="object-cover w-full"
                 src={product.image}
-                width={270}
-                height={200}
+                width={320}
+                height={280}
               />
-              <div className="flex flex-col items-start p-1">
-                <p className="text-tiny uppercase font-bold">{product.name}</p>
-                <small className="text-default-500">{product.type}</small>
-                <h4 className="font-bold text-large">{product.price}$</h4>
-                <p className="font-medium text-large text-start">{product.description}</p>
+              <div className="flex flex-col items-start p-4 w-full gap-2">
+                <h3 className="text-lg font-bold text-gray-900 uppercase tracking-wide">{product.name}</h3>
+                {product.type && (
+                  <span className="text-xs font-medium text-gray-500 uppercase">{product.type}</span>
+                )}
+                <h4 className="font-bold text-2xl text-green-600">${product.price}</h4>
+                <p className="text-sm text-gray-600 text-start line-clamp-2 leading-relaxed">{product.description}</p>
               </div>
             </CardHeader>
-            <CardBody className="m-6 overflow-visible py-2">
+            <CardBody className="flex justify-center items-center text-center overflow-visible py-3 px-4">
               <button
                 onClick={() => handleAddToCart(product)}
-                className="bg-green-400 text-white px-4 rounded cursor-pointer hover:bg-green-500 transition"
+                className="w-[80%] bg-green-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-green-600 transition-all mb-2 duration-200 shadow-md hover:shadow-lg"
               >
                 {t("agregar_carrito")}
               </button>
@@ -98,21 +100,23 @@ const Products = () => {
         ))}
       </article>
       {/* Controles de paginación */}
-      <div className="flex justify-center items-center gap-2 my-4">
+      <div className="flex justify-center items-center gap-4 my-8">
         <button
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          className="px-5 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200"
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
         >
-          Anterior
+          ← Anterior
         </button>
-        <span>Página {page} de {totalPages}</span>
+        <span className="text-gray-700 font-medium">
+          Página <span className="font-bold text-green-600">{page}</span> de <span className="font-bold">{totalPages}</span>
+        </span>
         <button
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          className="px-5 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200"
           onClick={() => handlePageChange(page + 1)}
           disabled={page === totalPages}
         >
-          Siguiente
+          Siguiente →
         </button>
       </div>
     </>
