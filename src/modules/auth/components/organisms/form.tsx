@@ -5,6 +5,7 @@ import Button from "@/components/atoms/Button";
 import { Spinner } from "@heroui/react";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
 type InputProps = {
@@ -36,6 +37,7 @@ const Form = ({
   isLogin = false,
 }: FormProps & { isLogin?: boolean }) => {
   const [googleLoading, setGoogleLoading] = useState(false);
+  const { t, i18n } = useTranslation();
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
@@ -89,7 +91,7 @@ const Form = ({
           <>
             <div className="flex items-center w-[300px] my-2">
               <div className="grow border-t border-gray-300"></div>
-              <span className="mx-4 text-gray-500 text-sm">o</span>
+              <span className="mx-4 text-gray-500 text-sm">{t("o")}</span>
               <div className="grow border-t border-gray-300"></div>
             </div>
 
@@ -102,7 +104,7 @@ const Form = ({
               {googleLoading ? (
                 <Spinner size="sm" color="success" />
               ) : (
-                <span>Iniciar con Google</span>
+                <span>{t("iniciar_con_google")}</span>
               )}
             </button>
           </>

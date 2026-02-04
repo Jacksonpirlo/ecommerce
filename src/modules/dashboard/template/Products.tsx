@@ -107,17 +107,17 @@ const Products = () => {
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
         >
-          Anterior
+          {t("anterior")}
         </button>
         <span className="text-gray-700 font-medium">
-          Página <span className="font-bold text-green-600">{page}</span> de <span className="font-bold">{totalPages}</span>
+          {t("pagina")} <span className="font-bold text-green-600">{page}</span> {t("de")} <span className="font-bold">{totalPages}</span>
         </span>
         <button
           className="px-5 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200"
           onClick={() => handlePageChange(page + 1)}
           disabled={page === totalPages}
         >
-          Siguiente
+          {t("siguiente")}
         </button>
       </div>
     </>

@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
   const [query, setQuery] = useState("");
+  const { t, i18n } = useTranslation();
 
   // Llama a onSearch cada vez que cambia el input
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,7 +17,7 @@ export default function SearchBar({ onSearch }: { onSearch: (query: string) => v
       <div className="relative w-full max-w-md">
         <input
           type="text"
-          placeholder="Buscar producto..."
+          placeholder={t("buscar")}
           value={query}
           onChange={handleChange}
           className="border-2 border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 px-4 py-2 rounded-full w-full shadow-sm transition-all duration-200 text-lg bg-white placeholder-gray-400 text-[#111]"

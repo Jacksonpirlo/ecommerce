@@ -1,7 +1,6 @@
 "use client";
 
 import { Spinner } from "@heroui/react";
-import axios from "axios";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -10,6 +9,7 @@ import { toast } from "react-toastify";
 
 import imageLogin from "@/assets/images/mobileImage.png";
 import Form from "../organisms/form";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -47,13 +47,13 @@ export default function Login() {
       setLoading(false);
     }
   };
+  const { t, i18n } = useTranslation();
 
   const fields = [
     {
       name: "email",
       type: "email",
-      placeHolder: "Correo electrónico",
-      placeholder: "Correo electrónico",
+      placeHolder: t('correo_electronico'),
       text: "",
       value: email,
       className: "",
@@ -62,8 +62,7 @@ export default function Login() {
     {
       name: "password",
       type: "password",
-      placeHolder: "Contraseña",
-      placeholder: "Contraseña",
+      placeHolder: t('contraseña'),
       text: "",
       value: password,
       className: "",
@@ -79,13 +78,13 @@ export default function Login() {
 
       <div className="">
         <h1 className="font-extrabold text-3xl text-center m-6 text-green-700">
-          Plantas bonitas
+          {t("plantas_bonitas")}
         </h1>
 
         <Form
-          titleOfTheForm="Iniciar sesión"
+          titleOfTheForm={t("iniciar_sesion")}
           fields={fields}
-          btnText={loading ? <Spinner size="sm" color="success" /> : "Iniciar sesión"}
+          btnText={loading ? <Spinner size="sm" color="success" /> : t("iniciar_sesion")}
           onClick={() => handleLogin()}
           className=""
           isLogin={true}
@@ -99,7 +98,7 @@ export default function Login() {
             onClick={() => router.push("/auth/register")}
             className="text-sm text-green-700 hover:underline"
           >
-            ¿No tienes cuenta? Regístrate
+            {t("no_tienes_cuenta")}
           </button>
         </div>
       </div>

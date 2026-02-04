@@ -5,6 +5,7 @@ import { toast } from "react-toastify"
 import { ProductFormData } from "@/dto/ProductProps"
 import Form from "@/modules/auth/components/organisms/form"
 import * as yup from "yup"
+import { useTranslation } from "react-i18next"
 
 const productSchema = yup.object().shape({
     name: yup.string().required("El nombre es obligatorio"),
@@ -113,38 +114,40 @@ const ProductForm = () => {
         }
     }
 
+    const { t, i18n } = useTranslation();
+
     const fields = [
         {
             name: "name",
-            placeHolder: "Nombre del Producto *",
+            placeHolder: t("nombre_producto"),
             value: formData.name,
             type: "text",
             onChange: handleInputChange,
         },
         {
             name: "price",
-            placeHolder: "Precio *",
+            placeHolder: t("precio"),
             value: formData.price,
             type: "number",
             onChange: handleInputChange,
         },
         {
             name: "description",
-            placeHolder: "Descripción *",
+            placeHolder: t("descripcion"),
             value: formData.description,
             type: "text",
             onChange: handleInputChange,
         },
         {
             name: "stock",
-            placeHolder: "Stock Disponible",
+            placeHolder: t("stock"),
             value: formData.stock,
             type: "number",
             onChange: handleInputChange,
         },
         {
             name: "category",
-            placeHolder: "Categoría",
+            placeHolder: t("categoria"),
             value: formData.category,
             type: "text",
             onChange: handleInputChange,
@@ -155,14 +158,14 @@ const ProductForm = () => {
         <section className="max-w-2xl mx-auto p-6 m-20">
             <Form
                 fields={fields}
-                titleOfTheForm="Crear Nuevo Producto"
+                titleOfTheForm={t("crear_nuevo_producto")}
                 onClick={handleSubmit}
-                btnText={loading ? "Creando producto..." : "Crear Producto"}
+                btnText={loading ? t("creando_producto") : t("create_products")}
                 btnDisabled={loading}
-                className="bg-white p-8 rounded-lg shadow-md" placeholder={""} value={""}            />
+                className="bg-white p-8 rounded-lg shadow-md" placeholder={""} value={""} />
             {/* Imagen */}
             <div className="mt-6">
-                <Label text="Imagen del Producto *" className="text-gray-700 font-semibold mb-2" />
+                <Label text={t("Imagen_producto")} className="text-gray-700 font-semibold mb-2" />
                 <input
                     type="file"
                     name="file"

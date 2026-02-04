@@ -15,7 +15,7 @@ interface LogoutButtonProps {
 
 export default function LogoutButton({ 
   className = "px-4 py-2 bg-[#009245] text-white rounded-md hover:bg-[#50ad7b] transition",
-  children = "Cerrar sesión",
+  children = "",
   showToast = true,
   redirectTo = "/auth/login"
 }: LogoutButtonProps) {

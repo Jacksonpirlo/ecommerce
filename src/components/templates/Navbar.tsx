@@ -67,7 +67,7 @@ export default function NavbarTemplate() {
         </button>
         <NavbarBrand>
           
-          <p className="font-bold text-inherit">PLANTAS BONITAS</p>
+          <p className="font-bold text-inherit">{t("plantas_bonitas")}</p>
         </NavbarBrand>
       </NavbarContent>
 
@@ -76,17 +76,17 @@ export default function NavbarTemplate() {
         <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
           <NextLink href="/dashboard">
-            Dashboard
+            {t("Inicio_nav")}
           </NextLink>
         </NavbarItem>
         <NavbarItem isActive>
           <NextLink href="/dashboard/products">
-            Products
+            {t("productos_nav")}
           </NextLink>
         </NavbarItem>
         <NavbarItem>
           <NextLink href="/dashboard/products/create" className="text-foreground">
-            Create Products
+            {t("crear_productos_nav")}
           </NextLink>
         </NavbarItem>
         <NavbarItem>
@@ -94,7 +94,7 @@ export default function NavbarTemplate() {
             onClick={() => router.push("/dashboard/cart")}
             className="bg-green-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-500 transition"
           >
-            Ver carrito
+            {t("ver_carrito")}
           </button>
         </NavbarItem>
       </NavbarContent>
@@ -106,19 +106,20 @@ export default function NavbarTemplate() {
         </>
       )}
       <NavbarContent justify="end">
-        <NavbarItem className="flex gap-4">
+        <NavbarItem className="flex gap-4 justify-center items-center">
 
           {session?.user && (
             <>
-            <LogoutButton />
-            <button
+            <LogoutButton children={t("cerrar_sesion")}  />
+            </>
+          )}
+
+          <button
               onClick={() => i18n.changeLanguage(i18n.language === "es" ? "en" : "es")}
               className="bg-[#000000] hover:bg-[#47883f] text-white px-4 py-2 rounded-md transition"
             >
               {i18n.language === "es" ? "EN" : "ES"}
             </button>
-            </>
-          )}
 
           {pathname === "/auth/login" && (
             <><NextLink href={"/auth/register"} >Register</NextLink></>
@@ -150,7 +151,7 @@ export default function NavbarTemplate() {
                 href="/dashboard"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Dashboard
+                {t("Inicio_nav")}
               </NextLink>
             </NavbarMenuItem>
             
@@ -160,7 +161,7 @@ export default function NavbarTemplate() {
                 href="/dashboard/products"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Products
+                {t("productos_nav")}
               </NextLink>
             </NavbarMenuItem>
             
@@ -170,7 +171,7 @@ export default function NavbarTemplate() {
                 href="/dashboard/products/create"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Create Products
+                {t("crear_productos_nav")}
               </NextLink>
             </NavbarMenuItem>
             
@@ -179,7 +180,7 @@ export default function NavbarTemplate() {
                 onClick={() => {router.push("/dashboard/cart");setIsMenuOpen(false) }}
                 className="w-full text-left text-white hover:text-green-400 transition py-4 block text-lg font-medium px-4"
               >
-                Ver carrito
+                  {t("ver_carrito")}
               </button>
             </NavbarMenuItem>
             

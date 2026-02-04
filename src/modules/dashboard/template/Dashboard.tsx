@@ -1,10 +1,13 @@
 "use client";
+
+import { useTranslation } from "react-i18next";
+
 export default function DashboardPage() {
+  const { t, i18n } = useTranslation();
   return (
     <>
     <div className="relative h-screen w-full overflow-hidden">
-
-  {/* Video de fondo */}
+      
   <video
     src="video.mp4"
     autoPlay
@@ -20,8 +23,8 @@ export default function DashboardPage() {
   {/* Contenido centrado */}
   <div className="relative z-10 flex items-center justify-center h-full text-center text-white px-6">
     <div>
-      <h1 className="text-5xl font-bold">Bienvenido a plantas bonitas</h1>
-      <p className="text-xl mt-4">Compre matas, no sea toche</p>
+      <h1 className="text-5xl font-bold">{t("bienvenido")}</h1>
+      <p className="text-xl mt-4">{t("mensaje")}</p>
     </div>
   </div>
 </div>
