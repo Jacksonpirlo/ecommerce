@@ -78,7 +78,7 @@ export default function Cart() {
           {products.map((item: any) => (
             <Card 
               className="py-0 px-0 text-black w-[320px] shadow-2xl m-5 rounded-2xl overflow-hidden hover:shadow-3xl transition-shadow duration-300" 
-              key={item.productId} // ← Usa productId como key
+              key={item.productId}
             >
               <CardHeader className="p-0 flex-col items-start">
                 <div className="w-full h-[280px] bg-gray-100 flex items-center justify-center overflow-hidden">

@@ -38,22 +38,22 @@ export default function NavbarTemplate() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
 
-  const menuItems = [
-    "Profile",
-    "Dashboard",
-    "Activity",
-    "Analytics",
-    "System",
-    "Deployments",
-    "My Settings",
-    "Team Settings",
-    "Help & Feedback",
-    "Log Out",
-  ];
+  // const menuItems = [
+  //   "Profile",
+  //   "Dashboard",
+  //   "Activity",
+  //   "Analytics",
+  //   "System",
+  //   "Deployments",
+  //   "My Settings",
+  //   "Team Settings",
+  //   "Help & Feedback",
+  //   "Log Out",
+  // ];
 
   return (
     <Navbar
-      className="bg-gray-800 text-white p-6"
+      className="bg-gray-800 text-white p-2 pt-6 pb-6"
       isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
     >
