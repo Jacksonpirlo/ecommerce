@@ -1,5 +1,5 @@
-import HomeTemplate from "@/components/templates/Home";
+import Login from "@/modules/auth/components/templates/Login";
 
 export default function Home() {
-  return (<HomeTemplate />);
+  return (<Login />);
 }
