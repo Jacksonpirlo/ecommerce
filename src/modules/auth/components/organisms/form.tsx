@@ -5,6 +5,7 @@ import Button from "@/components/atoms/Button";
 import { Spinner } from "@heroui/react";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 type InputProps = {
   name: string;
@@ -18,7 +19,7 @@ type FormProps = {
   fields: InputProps[];
   titleOfTheForm: string;
   onClick: () => void;
-  btnText: React.ReactNode; // <-- Cambia aquí
+  btnText: React.ReactNode;
   btnDisabled?: boolean;
   className?: string;
   placeholder?: string;
@@ -38,7 +39,16 @@ const Form = ({
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
-    await signIn("google");
+    try {
+      await signIn("google", {
+        callbackUrl: "/dashboard",
+        redirect: true,
+      });
+    } catch (error) {
+      console.error("Error al iniciar sesión con Google:", error);
+      toast.error("Error al conectar con Google");
+      setGoogleLoading(false);
+    }
   };
 
   return (
@@ -59,7 +69,7 @@ const Form = ({
         {fields?.map((field, idx) => (
           <input
             key={idx}
-            name={field.name} // <-- ¡ESTO ES CLAVE!
+            name={field.name}
             value={field.value}
             type={field.type}
             onChange={field.onChange}

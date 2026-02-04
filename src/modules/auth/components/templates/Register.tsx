@@ -97,10 +97,10 @@ const RegisterForm = () => {
   return (
     <>
       <div className="bg-[#f6f6f6]">
-        <Image src={imageLogin} alt="Imagen registro" className="" />
+        <Image src={imageLogin} height={270} width={270} alt="Imagen registro" className="" />
       </div>
 
-      <div className="mt-10">
+      <div className="mt-6">
         <h1 className="font-extrabold text-3xl text-center m-2 text-green-700">
           Plantas bonitas
         </h1>

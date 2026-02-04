@@ -72,12 +72,12 @@ export default function Login() {
   ];
 
   return (
-    <>
+    <section>
       <div className="bg-[#f6f6f6]">
-        <Image src={imageLogin} alt="Imagen login" className="" />
+        <Image src={imageLogin} height={270} width={270} alt="Imagen login" className="p-0.1" />
       </div>
 
-      <div className="mt-10">
+      <div className="">
         <h1 className="font-extrabold text-3xl text-center m-6 text-green-700">
           Plantas bonitas
         </h1>
@@ -103,6 +103,6 @@ export default function Login() {
           </button>
         </div>
       </div>
-    </>
+    </section>
   );
 }
