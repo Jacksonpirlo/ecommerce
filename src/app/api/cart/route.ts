@@ -5,7 +5,6 @@ import { connectDB } from "@/lib/db";
 export async function POST(req: NextRequest) {
   await connectDB();
   const { userId, product } = await req.json();
-  console.log(`HOLAA${userId}`)
 
   let cart = await Cart.findOne({ userId });
   if (!cart) {
@@ -24,12 +23,26 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  await connectDB();
-  const userId = req.nextUrl.searchParams.get("userId");
-  if (!userId) return Response.json({ ok: false, error: "userId requerido" }, { status: 400 });
-  console.log(userId)
-  const cart = await Cart.findOne({ userId });
-  return Response.json({ ok: true, cart });
+  try {
+    await connectDB();
+    const userId = req.nextUrl.searchParams.get("userId");
+    
+    if (userId) {
+      // Si viene userId, devuelve solo ese carrito
+      const cart = await Cart.findOne({ userId });
+      return Response.json({ ok: true, cart });
+    } else {
+      // Si NO viene userId, devuelve TODOS los carritos
+      const carts = await Cart.find({});
+      return Response.json({ ok: true, carts });
+    }
+  } catch (error: any) {
+    console.error("Error en GET /api/cart:", error);
+    return Response.json(
+      { ok: false, error: error.message },
+      { status: 500 }
+    );
+  }
 }
 
 export async function DELETE(req: NextRequest) {

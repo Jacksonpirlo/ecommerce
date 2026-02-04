@@ -12,7 +12,7 @@ import NextLink from "next/link";
 import { FaBars, FaTimes } from "react-icons/fa";
 import LogoutButton from "../organisms/LogoutButton";
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n/i18n";
 import CartView from "../CartView";
@@ -35,6 +35,7 @@ export default function NavbarTemplate() {
   const [showCart, setShowCart] = useState(false);
   const { data: session } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
   const { t, i18n } = useTranslation();
 
   const menuItems = [
@@ -90,7 +91,7 @@ export default function NavbarTemplate() {
         </NavbarItem>
         <NavbarItem>
           <button
-            onClick={() => setShowCart(!showCart)}
+            onClick={() => router.push("/dashboard/cart")}
             className="bg-green-400 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-500 transition"
           >
             Ver carrito
@@ -175,10 +176,7 @@ export default function NavbarTemplate() {
             
             <NavbarMenuItem className="border-b border-gray-700">
               <button
-                onClick={() => {
-                  setShowCart(!showCart);
-                  setIsMenuOpen(false);
-                }}
+                onClick={() => {router.push("/dashboard/cart");setIsMenuOpen(false) }}
                 className="w-full text-left text-white hover:text-green-400 transition py-4 block text-lg font-medium px-4"
               >
                 Ver carrito
