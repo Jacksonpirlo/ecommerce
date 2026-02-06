@@ -3,7 +3,7 @@
 import { useTranslation } from "react-i18next";
 
 export default function DashboardPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   return (
     <>
     <div className="relative h-screen w-full overflow-hidden">

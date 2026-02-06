@@ -10,6 +10,8 @@
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
+    "cypress:run": "cypress run",
+    "test:e2e:open": "cypress open",
     "cron": "tsx src/cron/emailCron.ts"
   },
   "dependencies": {
