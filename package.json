@@ -3,25 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-
-  "start": "next start",
-  "start:ci": "next start -p 3000",
-
-  "lint": "eslint",
-
-  "test": "jest --passWithNoTests",
-  "test:watch": "jest --watch",
-  "test:cov": "jest --coverage",
-
-  "cypress:run": "cypress run",
-  "test:e2e:open": "cypress open",
-
-  "test:e2e": "start-server-and-test \"npm run build\" \"npm run start:ci\" http://localhost:3000 cypress:run",
-
-  "cron": "tsx src/cron/emailCron.ts"
-},
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "start:ci": "next start -p 3000",
+    "lint": "eslint",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "cypress:run": "cypress run",
+    "test:e2e:open": "cypress open",
+    "test:e2e": "start-server-and-test start:ci http://localhost:3000 cypress:run",
+    "cron": "tsx src/cron/emailCron.ts"
+  },
   "dependencies": {
     "@heroui/navbar": "^2.2.25",
     "@heroui/react": "^2.8.5",
