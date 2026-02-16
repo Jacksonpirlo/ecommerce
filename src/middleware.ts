@@ -13,28 +13,36 @@ export default withAuth(
     const token = req.nextauth?.token;
     const origin = req.headers.get('origin');
 
+    // Determine CORS origin for native apps or allowed origins
+    const corsOrigin = 
+      (typeof origin === "string" && allowedOrigins.includes(origin)) 
+        ? origin 
+        : origin === null || !origin
+          ? allowedOrigins[0]
+          : null;
+
+    // Handle OPTIONS preflight request
+    if (req.method === 'OPTIONS') {
+      const preflightRes = NextResponse.json({}, { status: 204 });
+      
+      if (corsOrigin) {
+        preflightRes.headers.set('Access-Control-Allow-Origin', corsOrigin);
+        preflightRes.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+        preflightRes.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        preflightRes.headers.set('Access-Control-Allow-Credentials', 'true');
+      }
+      
+      return preflightRes;
+    }
+
     const res = NextResponse.next();
 
-    // CORS for allowed origins OR native apps (without origin or null)
-    if (
-      (typeof origin === "string" && allowedOrigins.includes(origin)) ||
-      origin === null ||
-      !origin
-    ) {
-      // If origin exists and is in the list, use that origin
-      // If no origin (native app), use a valid origin from the list
-      const corsOrigin = origin && allowedOrigins.includes(origin) 
-        ? origin 
-        : allowedOrigins[0];
-
+    // Apply CORS headers to actual request
+    if (corsOrigin) {
       res.headers.set('Access-Control-Allow-Origin', corsOrigin);
       res.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
       res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       res.headers.set('Access-Control-Allow-Credentials', 'true');
-    }
-
-    if (req.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: res.headers });
     }
 
     if (pathname.startsWith('/api/auth/')) {
