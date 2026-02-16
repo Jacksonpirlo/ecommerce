@@ -1,6 +1,6 @@
-import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 const allowedOrigins = [
   'http://localhost:3000',
@@ -19,13 +19,14 @@ function applyCorsHeaders(res: NextResponse, origin: string | null) {
   return res;
 }
 
-function handleApiRoutes(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const origin = req.headers.get('origin');
 
+  // Handle CORS for all API routes
   if (pathname.startsWith('/api/')) {
     if (req.method === 'OPTIONS') {
-      const preflightRes = new NextResponse(null, { status: 204 });
+      const preflightRes = new NextResponse(null, { status: 200 });
       return applyCorsHeaders(preflightRes, origin);
     }
     
@@ -33,46 +34,19 @@ function handleApiRoutes(req: NextRequest) {
     return applyCorsHeaders(res, origin);
   }
 
-  return null;
-}
+  // Handle authentication for non-API routes
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-export default withAuth(
-  function middleware(req) {
-    // Handle API routes (including NextAuth) before withAuth processing
-    const apiResponse = handleApiRoutes(req as NextRequest);
-    if (apiResponse) {
-      return apiResponse;
-    }
-
-    const { pathname } = req.nextUrl;
-    const token = req.nextauth?.token;
-
-    if (token && (pathname === "/auth/login" || pathname === "/auth/register")) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-
-    if (!token && pathname.startsWith("/dashboard")) {
-      return NextResponse.redirect(new URL("/auth/login", req.url));
-    }
-
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ req }) => {
-        // Always allow API routes
-        if (req.nextUrl.pathname.startsWith('/api/')) {
-          return true;
-        }
-        // Allow all other routes (handle auth in middleware function)
-        return true;
-      },
-    },
-    pages: {
-      signIn: "/auth/login",
-    },
+  if (token && (pathname === "/auth/login" || pathname === "/auth/register")) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
-);
+
+  if (!token && pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/auth/login", req.url));
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
