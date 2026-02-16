@@ -1,40 +1,57 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+const allowedOrigins = [
+  'http://localhost:3000',        // Dev web
+  'http://localhost:8081',        // React Native
+  // 'exp://127.0.0.1:19000',        // Expo dev
+  'https://ecommerce-drab-six.vercel.app', // Producción web
+];
+
 export default withAuth(
   function middleware(req) {
     const { pathname } = req.nextUrl;
     const token = req.nextauth?.token;
+    const origin = req.headers.get('origin');
 
-    // Si está logeado y trata de ir al login o register, redirigir al dashboard
+    const res = NextResponse.next();
+
+    if (typeof origin === "string" && allowedOrigins.includes(origin)) {
+      res.headers.set('Access-Control-Allow-Origin', origin);
+      res.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+      res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      res.headers.set('Access-Control-Allow-Credentials', 'true');
+    }
+
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: res.headers });
+    }
+
     if (token && (pathname === "/auth/login" || pathname === "/auth/register")) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
 
-    // Si NO está logeado y trata de ir al dashboard u otra ruta protegida
     if (!token && pathname.startsWith("/dashboard")) {
       return NextResponse.redirect(new URL("/auth/login", req.url));
     }
 
-    // Si pasa todas las condiciones, continúa
-    return NextResponse.next();
+    return res; // Devuelve la respuesta con CORS aplicada
   },
   {
     callbacks: {
-      // Autoriza todas las peticiones, pero el middleware arriba maneja las redirecciones
       authorized: ({ token }) => true,
     },
     pages: {
-      signIn: "/auth/login", // Página de login personalizada
+      signIn: "/auth/login",
     },
   }
 );
 
-// Indica qué rutas van a pasar por este middleware
 export const config = {
   matcher: [
-    "/dashboard/:path*", // Protege todas las rutas del dashboard
-    "/auth/login",       // Controla el acceso al login
-    "/auth/register",    // Controla el acceso al registro
+    "/dashboard/:path*",      
+    "/auth/login",
+    "/auth/register",
+    "/api/:path*",             // Todas las rutas de API para CORS
   ],
 };
