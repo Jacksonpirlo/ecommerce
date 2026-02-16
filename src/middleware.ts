@@ -3,31 +3,17 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const allowedOrigins = [
-  'http://localhost:3000',        // Web development
-  'http://localhost:8081',        // React Native Metro
-  'https://ecommerce-drab-six.vercel.app', // Production web
+  'http://localhost:3000',
+  'http://localhost:8081',
+  'https://ecommerce-drab-six.vercel.app',
 ];
 
 function applyCorsHeaders(res: NextResponse, origin: string | null) {
-  let corsOrigin: string | null = null;
-  let allowCredentials = true;
-
   if (typeof origin === "string" && allowedOrigins.includes(origin)) {
-    corsOrigin = origin;
-  } else if (origin === null || !origin) {
-    // For native apps without origin, use wildcard
-    corsOrigin = '*';
-    allowCredentials = false; // Cannot use credentials with wildcard
-  }
-
-  if (corsOrigin) {
-    res.headers.set('Access-Control-Allow-Origin', corsOrigin);
+    res.headers.set('Access-Control-Allow-Origin', origin);
     res.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
     res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    if (allowCredentials) {
-      res.headers.set('Access-Control-Allow-Credentials', 'true');
-    }
+    res.headers.set('Access-Control-Allow-Credentials', 'true');
   }
   
   return res;
