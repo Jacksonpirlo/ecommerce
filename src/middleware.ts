@@ -2,9 +2,9 @@ import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
 const allowedOrigins = [
-  'http://localhost:3000',        // Dev web
+  'http://localhost:3000',        // Web development
   'http://localhost:8081',        // React Native Metro
-  'https://ecommerce-drab-six.vercel.app', // Producción web
+  'https://ecommerce-drab-six.vercel.app', // Production web
 ];
 
 export default withAuth(
@@ -15,8 +15,19 @@ export default withAuth(
 
     const res = NextResponse.next();
 
-    if (typeof origin === "string" && allowedOrigins.includes(origin)) {
-      res.headers.set('Access-Control-Allow-Origin', origin);
+    // CORS for allowed origins OR native apps (without origin or null)
+    if (
+      (typeof origin === "string" && allowedOrigins.includes(origin)) ||
+      origin === null ||
+      !origin
+    ) {
+      // If origin exists and is in the list, use that origin
+      // If no origin (native app), use a valid origin from the list
+      const corsOrigin = origin && allowedOrigins.includes(origin) 
+        ? origin 
+        : allowedOrigins[0];
+
+      res.headers.set('Access-Control-Allow-Origin', corsOrigin);
       res.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
       res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       res.headers.set('Access-Control-Allow-Credentials', 'true');
